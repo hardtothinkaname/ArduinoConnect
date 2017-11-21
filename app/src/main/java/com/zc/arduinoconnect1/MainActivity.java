@@ -113,10 +113,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    SerialInputOutputManager serialInputOutputManager;
     public void onClickSend(View view){
         // Read some data! Most have just one port (port 0).
-        SerialInputOutputManager serialInputOutputManager = new SerialInputOutputManager(port, new SerialInputOutputManager.Listener() {
+        serialInputOutputManager= new SerialInputOutputManager(port, new SerialInputOutputManager.Listener() {
             @Override
             public void onNewData(byte[] data) {
                 mMsg = mMsg + new String(data);
@@ -146,12 +146,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickStop(View view){
-        try {
-            port.close();
-//            mIsPortOpened = false;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        serialInputOutputManager.stop();
+//        try {
+//            port.close();
+////            mIsPortOpened = false;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
