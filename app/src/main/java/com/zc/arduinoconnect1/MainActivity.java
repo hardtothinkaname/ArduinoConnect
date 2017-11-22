@@ -52,6 +52,14 @@ public class MainActivity extends AppCompatActivity {
     private String mMsg;
     private ProbeTable customTable = new ProbeTable();
 
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            mMsg = mMsg + msg.obj;
+//            Toast.makeText(MainActivity.this, "receive,DSR" ,Toast.LENGTH_SHORT).show();
+            tvShowText.setText(mMsg);
+        }
+    };
 
 
     @Override
@@ -119,9 +127,9 @@ public class MainActivity extends AppCompatActivity {
         serialInputOutputManager= new SerialInputOutputManager(port, new SerialInputOutputManager.Listener() {
             @Override
             public void onNewData(byte[] data) {
-                mMsg = mMsg + new String(data);
-                Toast.makeText(MainActivity.this, "receive,DSR" ,Toast.LENGTH_SHORT).show();
-                tvShowText.setText(mMsg);
+                Message msg = new Message();
+                msg.obj = new String(data);
+                mHandler.sendMessage(msg);
             }
 
             @Override
@@ -129,7 +137,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        serialInputOutputManager.run();
+
+
+        Thread serialThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                serialInputOutputManager.run();
+            }
+        });
+        serialThread.start();
 
 //        try {
 //            byte buffer[] = new byte[64];
